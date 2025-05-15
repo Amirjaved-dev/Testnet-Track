@@ -21,10 +21,10 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.currentId = 1;
     
-    // Add demo admin user
+    // Add demo admin user with unhashed password (will be handled in auth.ts)
     this.createUser({
       username: "admin",
-      password: "admin123",
+      password: "admin123", // Auth system will handle this plain text password
       email: "admin@demo.com",
       isAdmin: true
     }).then(user => {

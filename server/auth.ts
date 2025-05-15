@@ -17,12 +17,18 @@ declare global {
 }
 
 // Compare password with hashed version
-async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
+async function comparePasswords(supplied: string, stored: string, username?: string): Promise<boolean> {
+  // Special case for demo admin account
+  if (username === 'admin' && stored === 'admin123' && supplied === 'admin123') {
+    return true;
+  }
+  
   try {
+    // For regular bcrypt hashed passwords
     return await bcrypt.compare(supplied, stored);
   } catch (error) {
     console.error("Error comparing passwords:", error);
-    // If not a bcrypt hash or another error occurs, try direct comparison for demo accounts
+    // If not a bcrypt hash or another error occurs, try direct comparison
     return supplied === stored;
   }
 }
@@ -58,7 +64,7 @@ export async function setupAuth(app: Express) {
           return done(null, false, { message: "Invalid username or password" });
         }
         
-        const isPasswordValid = await comparePasswords(password, user.password);
+        const isPasswordValid = await comparePasswords(password, user.password, username);
         
         if (!isPasswordValid) {
           log(`Login failed: Invalid password for ${username}`, "auth");
