@@ -120,6 +120,7 @@ export default function AirdropChecker() {
       </header>
 
       <main className="flex-1 relative z-10 max-w-4xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Top section with note and ad */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             {/* Note card */}
@@ -158,86 +159,101 @@ export default function AirdropChecker() {
           </div>
         </div>
 
-        {/* Search form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          <Card className="bg-white shadow-lg rounded-xl p-8 hover-scale mb-8">
-            <CardContent className="p-0">
-              <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
-                <span className="text-gradient">Check</span> your airdrop eligibility
-              </h2>
-              
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div 
-                          className={`mt-1 relative rounded-lg shadow-sm transition-all duration-300 ${
-                            focus ? 'ring-2 ring-indigo-300' : ''
-                          } ${form.formState.errors.address ? 'ring-2 ring-red-300' : ''}`}
-                        >
-                          <FormControl>
-                            <Input
-                              placeholder="Enter Ethereum wallet address (0x...)"
-                              {...field}
-                              className={`text-base py-6 border-2 rounded-lg ${
-                                form.formState.errors.address ? "border-red-400 pr-10" : "border-gray-200"
-                              } focus:border-indigo-400 transition-colors duration-200`}
-                              onFocus={() => setFocus(true)}
-                              onBlur={() => setFocus(false)}
-                            />
-                          </FormControl>
-                          {form.formState.errors.address ? (
-                            <motion.div 
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.2 }}
+        {/* Search form section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div className="md:col-span-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <Card className="bg-white shadow-lg rounded-xl p-8 hover-scale mb-8">
+                <CardContent className="p-0">
+                  <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
+                    <span className="text-gradient">Check</span> your airdrop eligibility
+                  </h2>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div 
+                              className={`mt-1 relative rounded-lg shadow-sm transition-all duration-300 ${
+                                focus ? 'ring-2 ring-indigo-300' : ''
+                              } ${form.formState.errors.address ? 'ring-2 ring-red-300' : ''}`}
                             >
-                              <AlertCircle className="h-5 w-5 text-red-500" />
-                            </motion.div>
-                          ) : (
-                            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-                              <Search className="h-5 w-5" />
+                              <FormControl>
+                                <Input
+                                  placeholder="Enter Ethereum wallet address (0x...)"
+                                  {...field}
+                                  className={`text-base py-6 border-2 rounded-lg ${
+                                    form.formState.errors.address ? "border-red-400 pr-10" : "border-gray-200"
+                                  } focus:border-indigo-400 transition-colors duration-200`}
+                                  onFocus={() => setFocus(true)}
+                                  onBlur={() => setFocus(false)}
+                                />
+                              </FormControl>
+                              {form.formState.errors.address ? (
+                                <motion.div 
+                                  className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <AlertCircle className="h-5 w-5 text-red-500" />
+                                </motion.div>
+                              ) : (
+                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+                                  <Search className="h-5 w-5" />
+                                </div>
+                              )}
                             </div>
+                            <FormMessage className="text-red-500 mt-2 text-sm" />
+                          </FormItem>
+                        )}
+                      />
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button 
+                          type="submit" 
+                          className={`w-full py-6 rounded-lg text-white font-medium text-lg shadow transition-all duration-300 ${
+                            isLoading ? 'bg-indigo-400' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700'
+                          }`}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                              Checking Eligibility...
+                            </span>
+                          ) : (
+                            "Check Airdrop Eligibility"
                           )}
-                        </div>
-                        <FormMessage className="text-red-500 mt-2 text-sm" />
-                      </FormItem>
-                    )}
-                  />
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button 
-                      type="submit" 
-                      className={`w-full py-6 rounded-lg text-white font-medium text-lg shadow transition-all duration-300 ${
-                        isLoading ? 'bg-indigo-400' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700'
-                      }`}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          Checking Eligibility...
-                        </span>
-                      ) : (
-                        "Check Airdrop Eligibility"
-                      )}
-                    </Button>
-                  </motion.div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </motion.div>
+                        </Button>
+                      </motion.div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+          
+          {/* Ad on the side for desktop */}
+          <div className="md:col-span-1 hidden md:block">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <AdvertisementDisplay placement="airdrop-side" className="mb-4" />
+            </motion.div>
+          </div>
+        </div>
 
         {/* Airdrop criteria information */}
         <motion.div
@@ -339,260 +355,129 @@ export default function AirdropChecker() {
                 <div className={`px-8 py-4 ${walletData.airdropEligibility.isEligible ? 'bg-green-50 border-b border-green-100' : 'bg-red-50 border-b border-red-100'}`}>
                   <div className="flex items-center">
                     {walletData.airdropEligibility.isEligible ? (
-                      <>
-                        <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                        <h3 className="font-bold text-green-800">Eligible for Airdrop</h3>
-                      </>
+                      <CheckCircle className="h-6 w-6 text-green-500 mr-3" />
                     ) : (
-                      <>
-                        <XCircle className="h-5 w-5 text-red-600 mr-2" />
-                        <h3 className="font-bold text-red-800">Not Eligible for Airdrop</h3>
-                      </>
+                      <XCircle className="h-6 w-6 text-red-500 mr-3" />
                     )}
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        {walletData.airdropEligibility.isEligible 
+                          ? "Eligible for Airdrop" 
+                          : "Not Eligible for Airdrop"}
+                      </h3>
+                      <div className="flex items-center mt-1">
+                        <span className="text-sm text-gray-600 mr-2">Wallet:</span>
+                        <span className="text-sm font-medium">{formatAddress(walletAddress)}</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => copyToClipboard(walletAddress)}
+                                className="ml-2 text-indigo-500 hover:text-indigo-700"
+                              >
+                                {isCopied ? (
+                                  <CheckCircle className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy address</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <CardContent className="p-8">
-                  {/* Wallet Information */}
-                  <div className="mb-6 pb-6 border-b border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="px-3 py-2 bg-gray-100 rounded-lg font-mono text-sm">
-                          {formatAddress(walletData.address)}
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-indigo-600 hover:text-indigo-800 p-1 rounded-full h-8 w-8 flex items-center justify-center" 
-                          onClick={() => copyToClipboard(walletData.address)}
-                        >
-                          <AnimatePresence>
-                            {isCopied ? (
-                              <motion.div
-                                key="check"
-                                initial={{ scale: 0.5, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.5, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                key="copy"
-                                initial={{ scale: 0.5, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.5, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Copy className="h-4 w-4" />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </Button>
-                      </div>
-                      <div className="flex gap-2">
-                        <a
-                          href={`https://etherscan.io/address/${walletData.address}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors"
-                        >
-                          Etherscan <ExternalLink className="h-3 w-3" />
-                        </a>
-                        <a
-                          href={`https://explorer.testnet.monad.xyz/address/${walletData.address}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors"
-                        >
-                          Monad Explorer <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Status message */}
-                  <div className="mb-6">
-                    <p className={`text-base ${walletData.airdropEligibility.isEligible ? 'text-green-700' : 'text-red-700'}`}>
-                      {walletData.airdropEligibility.message}
-                    </p>
-                  </div>
-                  
-                  {/* Criteria Results */}
+                <CardContent className="p-6">
                   <div className="space-y-4">
-                    <h4 className="font-bold text-base mb-4">Criteria Results:</h4>
+                    <h4 className="font-medium text-lg mb-3">Criteria Check Results</h4>
                     
-                    {/* ETH Mainnet Transactions */}
-                    <div className={`flex items-center p-4 rounded-lg ${
-                      walletData.airdropEligibility.criteria.ethTransactions.isEligible 
-                        ? 'bg-green-50 border border-green-100' 
-                        : 'bg-red-50 border border-red-100'
-                    }`}>
-                      <div className="flex-shrink-0 mr-4">
-                        {walletData.airdropEligibility.criteria.ethTransactions.isEligible ? (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        ) : (
-                          <XCircle className="h-6 w-6 text-red-500" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">ETH Mainnet Transactions</p>
-                        <p className="text-sm">
-                          Required: {walletData.airdropEligibility.criteria.ethTransactions.required} transactions | 
-                          Actual: {walletData.airdropEligibility.criteria.ethTransactions.actual} transactions
-                        </p>
-                      </div>
+                    <div className="grid grid-cols-1 gap-3">
+                      {Object.entries(walletData.airdropEligibility.criteria).map(([key, value], index) => {
+                        const criteriaLabel = {
+                          'ethereumActivity': 'Ethereum Mainnet Activity',
+                          'nftOwnership': 'NADS NFT Ownership',
+                          'tokenBalance': 'MON Token Balance',
+                          'monadActivity': 'Monad Testnet Activity',
+                          'earlyAdopter': 'Early Adopter Status',
+                        }[key] || key;
+                        
+                        const criteriaDescription = {
+                          'ethereumActivity': 'At least 10 transactions on Ethereum Mainnet',
+                          'nftOwnership': 'Own at least one NADS NFT',
+                          'tokenBalance': 'At least 10 MON tokens on Monad testnet',
+                          'monadActivity': 'At least 200 transactions on Monad testnet',
+                          'earlyAdopter': 'Had transactions on Monad testnet before February 26, 2025',
+                        }[key] || '';
+                        
+                        return (
+                          <div 
+                            key={key}
+                            className={`flex items-center p-4 rounded-lg ${
+                              value ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'
+                            }`}
+                          >
+                            <div className={`flex-shrink-0 mr-3 h-8 w-8 rounded-full flex items-center justify-center ${
+                              value ? 'bg-green-100' : 'bg-red-100'
+                            }`}>
+                              {value ? (
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              ) : (
+                                <XCircle className="h-5 w-5 text-red-600" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium">{criteriaLabel}</div>
+                              <div className="text-sm text-gray-600">{criteriaDescription}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                     
-                    {/* NADS NFT Ownership */}
-                    <div className={`flex items-center p-4 rounded-lg ${
-                      walletData.airdropEligibility.criteria.nadsNft.isEligible 
-                        ? 'bg-green-50 border border-green-100' 
-                        : 'bg-red-50 border border-red-100'
-                    }`}>
-                      <div className="flex-shrink-0 mr-4">
-                        {walletData.airdropEligibility.criteria.nadsNft.isEligible ? (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        ) : (
-                          <XCircle className="h-6 w-6 text-red-500" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">NADS NFT Ownership</p>
-                        <p className="text-sm">
-                          Required: At least one NFT | 
-                          Status: {walletData.airdropEligibility.criteria.nadsNft.actual ? 'Owns NFT' : 'No NFT'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* MON Token Balance */}
-                    <div className={`flex items-center p-4 rounded-lg ${
-                      walletData.airdropEligibility.criteria.monBalance.isEligible 
-                        ? 'bg-green-50 border border-green-100' 
-                        : 'bg-red-50 border border-red-100'
-                    }`}>
-                      <div className="flex-shrink-0 mr-4">
-                        {walletData.airdropEligibility.criteria.monBalance.isEligible ? (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        ) : (
-                          <XCircle className="h-6 w-6 text-red-500" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">MON Token Balance</p>
-                        <p className="text-sm">
-                          Required: {walletData.airdropEligibility.criteria.monBalance.required} | 
-                          Actual: {walletData.airdropEligibility.criteria.monBalance.actual}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Monad Testnet Transactions */}
-                    <div className={`flex items-center p-4 rounded-lg ${
-                      walletData.airdropEligibility.criteria.monadTransactions.isEligible 
-                        ? 'bg-green-50 border border-green-100' 
-                        : 'bg-red-50 border border-red-100'
-                    }`}>
-                      <div className="flex-shrink-0 mr-4">
-                        {walletData.airdropEligibility.criteria.monadTransactions.isEligible ? (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        ) : (
-                          <XCircle className="h-6 w-6 text-red-500" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">Monad Testnet Transactions</p>
-                        <p className="text-sm">
-                          Required: {walletData.airdropEligibility.criteria.monadTransactions.required} transactions | 
-                          Actual: {walletData.airdropEligibility.criteria.monadTransactions.actual} transactions
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Early Adopter Status */}
-                    <div className={`flex items-center p-4 rounded-lg ${
-                      walletData.airdropEligibility.criteria.earlyAdopter.isEligible 
-                        ? 'bg-green-50 border border-green-100' 
-                        : 'bg-red-50 border border-red-100'
-                    }`}>
-                      <div className="flex-shrink-0 mr-4">
-                        {walletData.airdropEligibility.criteria.earlyAdopter.isEligible ? (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        ) : (
-                          <XCircle className="h-6 w-6 text-red-500" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">Early Adopter Status</p>
-                        <p className="text-sm">
-                          Required: Active before Feb 26, 2025 | 
-                          {walletData.airdropEligibility.criteria.earlyAdopter.isEligible 
-                            ? ` First activity: ${walletData.airdropEligibility.criteria.earlyAdopter.date}`
-                            : ' No activity before required date'}
-                        </p>
-                      </div>
+                    <div className="pt-4 border-t border-gray-100 mt-6">
+                      <Button 
+                        onClick={handleRetry}
+                        variant="outline"
+                        className="border-indigo-200 hover:bg-indigo-50 text-indigo-700"
+                      >
+                        Check Another Wallet
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           )}
-
-          {isError && (
+          
+          {!isLoading && isError && (
             <motion.div
               key="error"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.4 }}
-              className="mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
             >
-              <Card className="bg-white shadow-lg rounded-xl overflow-hidden border border-red-100">
-                <div className="bg-red-50 py-2 px-6 border-b border-red-100">
-                  <div className="flex items-center text-red-700">
-                    <AlertTriangle className="h-5 w-5 mr-2" />
-                    <span className="font-medium">Error Encountered</span>
-                  </div>
-                </div>
-                <CardContent className="p-8">
-                  <div className="text-center">
-                    <motion.div 
-                      className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5"
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                    >
-                      <AlertCircle className="h-8 w-8 text-red-600" />
-                    </motion.div>
-                    
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Failed to check eligibility</h3>
-                    
-                    <div className="mb-6">
-                      <motion.div
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.4, delay: 0.3 }}
-                      >
-                        <p className="text-gray-600 bg-gray-50 p-4 rounded-lg border border-gray-100 inline-block max-w-md">
-                          {(error as Error)?.message || "There was an error processing your request. Please try again."}
-                        </p>
-                      </motion.div>
+              <Card className="bg-white shadow-lg rounded-xl overflow-hidden mb-8 border-red-200">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center py-4">
+                    <div className="bg-red-100 rounded-full p-3 mb-4">
+                      <AlertCircle className="h-8 w-8 text-red-500" />
                     </div>
-                    
-                    <motion.div 
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <h3 className="text-lg font-semibold mb-2">Error Checking Wallet</h3>
+                    <p className="text-gray-600 mb-6 max-w-md">
+                      We couldn't retrieve information for the provided wallet address. 
+                      This could be due to network issues or the address may not be valid on Monad testnet.
+                    </p>
+                    <Button 
+                      onClick={handleRetry}
+                      className="border-2 border-red-200 bg-red-50 hover:bg-red-100 text-red-600"
                     >
-                      <Button 
-                        onClick={handleRetry} 
-                        variant="default" 
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white py-5 px-6 rounded-lg font-medium inline-flex items-center gap-2 shadow-md transition-all duration-300"
-                      >
-                        <Loader2 className="h-5 w-5" />
-                        <span>Try Again</span>
-                      </Button>
-                    </motion.div>
+                      Try Again
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
