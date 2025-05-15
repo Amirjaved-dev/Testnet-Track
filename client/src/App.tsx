@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,16 +7,17 @@ import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AirdropChecker from "@/pages/AirdropChecker";
-import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
 import Advertisements from "@/pages/Advertisements";
+import AuthPage from "@/pages/auth-page";
 import Navigation from "@/components/Navigation";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider } from "@/hooks/use-auth";
 import { createDummyAdvertisements } from "@/lib/helpers/db";
 import { setupSupabaseTables, createDefaultAdminUser } from "@/lib/helpers/supabaseSetup";
+import { ProtectedRoute } from "./lib/protected-route";
+import { AppConfigProvider } from "./lib/appConfig";
 
 function Router() {
-  
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
@@ -25,9 +26,12 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/airdrop-checker" component={AirdropChecker} />
           <Route path="/airdrop" component={AirdropChecker} />
-          <Route path="/login" component={Login} />
-          <Route path="/admin" component={Admin} />
-          <Route path="/admin/advertisements" component={Advertisements} />
+          <Route path="/auth" component={AuthPage} />
+          
+          {/* Protected Admin Routes */}
+          <ProtectedRoute path="/admin" component={Admin} />
+          <ProtectedRoute path="/admin/advertisements" component={Advertisements} />
+          
           <Route component={NotFound} />
         </Switch>
       </main>
@@ -42,8 +46,13 @@ function Router() {
 }
 
 function App() {
-  // Initialize Supabase database tables and default admin user
+  // Log available environment variables (excluding secrets)
   useEffect(() => {
+    const envVars = Object.keys(import.meta.env)
+      .filter(key => !key.includes('SECRET') && !key.includes('PASSWORD'));
+    console.log('Available env vars:', envVars);
+    
+    // Initialize database and application resources
     const initializeApp = async () => {
       try {
         // Set up database tables
@@ -72,10 +81,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AppConfigProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AppConfigProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
