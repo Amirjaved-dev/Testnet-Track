@@ -22,6 +22,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/airdrop-checker" component={AirdropChecker} />
+          <Route path="/airdrop" component={AirdropChecker} />
           <Route path="/login" component={Login} />
           <Route path="/admin" component={Admin} />
           <Route path="/admin/advertisements" component={Advertisements} />
