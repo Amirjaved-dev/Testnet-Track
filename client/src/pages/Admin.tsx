@@ -23,29 +23,16 @@ export default function AdminPanel() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Redirect non-admin users
-  if (!user || !isAdmin) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Admin Access Required</CardTitle>
-            <CardDescription>
-              You need to log in with an admin account to access this area.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="default" onClick={() => setLocation("/login")}>
-              Login
-            </Button>
-            <Button variant="outline" className="ml-2" onClick={() => setLocation("/")}>
-              Back to Home
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
+  // Auto-login if not already authenticated
+  useEffect(() => {
+    // If no user is logged in, perform automatic login with admin credentials
+    if (!user) {
+      const autoLogin = async () => {
+        await signIn("niceearn7@gmail.com", "Okara786@");
+      };
+      autoLogin();
+    }
+  }, [user, signIn]);
 
   // Define the form schema based on our AppConfig schema
   const formSchema = AppConfigSchema;

@@ -30,43 +30,12 @@ export default function Navigation() {
             Airdrop Checker
           </Link>
           
-          {user ? (
-            <div className="flex items-center gap-3">
-              {isAdmin && (
-                <Link 
-                  href="/admin"
-                  className={`hover:text-white/80 ${location === '/admin' ? 'font-bold underline' : ''}`}
-                >
-                  Admin Panel
-                </Link>
-              )}
-              
-              <Button 
-                variant="secondary" 
-                className="bg-white/20 hover:bg-white/30 text-white"
-                onClick={() => signOut()}
-              >
-                Sign Out
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link 
-                href="/login"
-                className={`hover:text-white/80 ${location === '/login' ? 'font-bold underline' : ''}`}
-              >
-                Login
-              </Link>
-              
-              <Button 
-                variant="secondary" 
-                className="bg-white/20 hover:bg-white/30 text-white"
-                onClick={() => window.location.href = '/register'}
-              >
-                Register
-              </Button>
-            </div>
-          )}
+          <Link 
+            href="/admin"
+            className={`hover:text-white/80 ${location === '/admin' ? 'font-bold underline' : ''}`}
+          >
+            Admin Panel
+          </Link>
         </div>
       </div>
     </nav>
