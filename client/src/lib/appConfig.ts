@@ -31,7 +31,7 @@ const AppConfigContext = createContext<AppConfigContextType>({
   config: defaultAppConfig,
   loading: false,
   error: null,
-  updateConfig: async () => {}
+  updateConfig: async () => {},
 });
 
 // Hook to use app config
@@ -42,151 +42,153 @@ type AppConfigProviderProps = {
   children: ReactNode;
 };
 
-// Type for flattened settings
-type FlattenedSetting = {
-  key: string;
-  value: string;
-  type: string;
-};
-
 export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
   const [config, setConfig] = useState<AppConfig>(defaultAppConfig);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch app settings from Supabase
   useEffect(() => {
-    const fetchAppSettings = async () => {
-      setLoading(true);
-      setError(null);
-      
+    async function fetchAppSettings() {
       try {
+        setLoading(true);
+        
+        // Fetch settings from Supabase
         const { data, error: fetchError } = await supabase
           .from('app_settings')
-          .select('key, value, type');
+          .select('*');
         
         if (fetchError) {
-          throw new Error(`Error fetching app settings: ${fetchError.message}`);
+          throw new Error(`Failed to fetch app settings: ${fetchError.message}`);
         }
         
-        // Parse settings into config object
         if (data && data.length > 0) {
-          const configData: Record<string, any> = {};
+          // Process the data into a config object
+          const configObj: Record<string, any> = {};
           
-          for (const setting of data) {
-            let value: any = setting.value;
+          data.forEach(setting => {
+            // Process the value based on its type
+            let processedValue: any = setting.value;
             
-            // Parse value based on type
-            switch (setting.type) {
-              case 'number':
-                value = parseFloat(value);
-                break;
-              case 'boolean':
-                value = value === 'true';
-                break;
-              case 'json':
-                value = JSON.parse(value);
-                break;
+            if (setting.type === 'number') {
+              processedValue = Number(setting.value);
+            } else if (setting.type === 'boolean') {
+              processedValue = setting.value === 'true';
+            } else if (setting.type === 'json') {
+              try {
+                processedValue = JSON.parse(setting.value);
+              } catch (e) {
+                console.error(`Failed to parse JSON for setting ${setting.key}:`, e);
+              }
             }
             
-            // Handle nested properties (e.g., airdropRequirements.ethTransactions)
+            // Handle nested properties (e.g. "airdropRequirements.ethTransactions")
             if (setting.key.includes('.')) {
-              const [parent, child] = setting.key.split('.');
-              configData[parent] = { 
-                ...(configData[parent] || {}),
-                [child]: value 
-              };
+              const parts = setting.key.split('.');
+              const mainKey = parts[0];
+              const subKey = parts[1];
+              
+              if (!configObj[mainKey]) {
+                configObj[mainKey] = {};
+              }
+              
+              configObj[mainKey][subKey] = processedValue;
             } else {
-              configData[setting.key] = value;
+              configObj[setting.key] = processedValue;
             }
-          }
-          
-          // Validate and merge with defaults
-          const parsedConfig = AppConfigSchema.parse({
-            ...defaultAppConfig,
-            ...configData,
           });
           
-          setConfig(parsedConfig);
+          // Merge with default config and validate with zod schema
+          const mergedConfig = {
+            ...defaultAppConfig,
+            ...configObj
+          };
+          
+          const validatedConfig = AppConfigSchema.parse(mergedConfig);
+          setConfig(validatedConfig);
         }
       } catch (err) {
-        console.error("Failed to load app configuration:", err);
-        setError(err instanceof Error ? err.message : String(err));
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error('Error loading app settings:', errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
-    };
+    }
     
     fetchAppSettings();
   }, []);
   
-  // Update app settings
+  // Function to update app configuration
   const updateConfig = async (newConfig: Partial<AppConfig>) => {
-    setLoading(true);
-    setError(null);
-    
     try {
-      // First, flatten the configuration for storage
-      const flattenedSettings: FlattenedSetting[] = [];
+      setLoading(true);
       
-      // Helper function to flatten the config object
-      const flattenConfig = (obj: any, prefix = '') => {
+      // Convert the config to flat settings for storage
+      const settings: Array<{key: string, value: string, type: string}> = [];
+      
+      // Flatten the object for storage
+      function flattenObject(obj: any, prefix = '') {
         for (const [key, value] of Object.entries(obj)) {
-          const fullKey = prefix ? `${prefix}.${key}` : key;
+          const newKey = prefix ? `${prefix}.${key}` : key;
           
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-            // Recursively flatten nested objects
-            flattenConfig(value, fullKey);
+          if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+            // Recurse for nested objects
+            flattenObject(value, newKey);
           } else {
-            // Determine the type and stringify the value
-            let type: string = typeof value;
+            // Determine the appropriate type
+            let type = typeof value;
             let stringValue: string;
             
             if (Array.isArray(value)) {
-              type = 'json';
               stringValue = JSON.stringify(value);
-            } else if (type === 'object') {
               type = 'json';
+            } else if (value === null || value === undefined) {
+              continue; // Skip null/undefined values
+            } else if (typeof value === 'object') {
               stringValue = JSON.stringify(value);
+              type = 'json';
             } else {
               stringValue = String(value);
             }
             
-            flattenedSettings.push({
-              key: fullKey,
+            settings.push({
+              key: newKey,
               value: stringValue,
               type,
             });
           }
         }
-      };
+      }
       
-      flattenConfig(newConfig);
+      flattenObject(newConfig);
       
-      // Update settings in Supabase
-      for (const setting of flattenedSettings) {
+      // Update each setting in Supabase
+      for (const setting of settings) {
         const { error: upsertError } = await supabase
           .from('app_settings')
           .upsert({
             key: setting.key,
             value: setting.value,
             type: setting.type,
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           }, { onConflict: 'key' });
         
         if (upsertError) {
-          throw new Error(`Error updating setting ${setting.key}: ${upsertError.message}`);
+          throw new Error(`Failed to update setting ${setting.key}: ${upsertError.message}`);
         }
       }
       
-      // Update the local state
-      setConfig(prev => ({
-        ...prev,
+      // Update local state with the new config
+      setConfig({
+        ...config,
         ...newConfig,
-      }));
+      });
+      
     } catch (err) {
-      console.error("Failed to update app configuration:", err);
-      setError(err instanceof Error ? err.message : String(err));
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error('Error updating app settings:', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
