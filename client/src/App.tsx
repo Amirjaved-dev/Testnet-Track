@@ -1,28 +1,34 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AirdropChecker from "@/pages/AirdropChecker";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
 import Admin from "@/pages/Admin";
 import Advertisements from "@/pages/Advertisements";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/lib/auth";
 
 function Router() {
+  // Handle redirects for login and register pages
+  const [location, setLocation] = useLocation();
+  
+  useEffect(() => {
+    if (location === "/login" || location === "/register") {
+      setLocation("/admin");
+    }
+  }, [location, setLocation]);
+  
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/airdrop" component={AirdropChecker} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
+          <Route path="/airdrop-checker" component={AirdropChecker} />
           <Route path="/admin" component={Admin} />
           <Route path="/admin/advertisements" component={Advertisements} />
           <Route component={NotFound} />
