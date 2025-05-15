@@ -231,16 +231,8 @@ export default function AdvertisementsPage() {
     setOpenDialog(true);
   };
 
-  // Auto-login if not already authenticated
-  useEffect(() => {
-    // If no user is logged in, perform automatic login with admin credentials
-    if (!user) {
-      const autoLogin = async () => {
-        await signIn("niceearn7@gmail.com", "Okara786@");
-      };
-      autoLogin();
-    }
-  }, [user, signIn]);
+  // We'll use a simpler approach for admin access
+  // by removing authentication checks altogether
 
   return (
     <div className="container mx-auto py-8 px-4">

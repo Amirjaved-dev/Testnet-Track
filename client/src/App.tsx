@@ -13,14 +13,6 @@ import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/lib/auth";
 
 function Router() {
-  // Handle redirects for login and register pages
-  const [location, setLocation] = useLocation();
-  
-  useEffect(() => {
-    if (location === "/login" || location === "/register") {
-      setLocation("/admin");
-    }
-  }, [location, setLocation]);
   
   return (
     <div className="min-h-screen flex flex-col bg-background">

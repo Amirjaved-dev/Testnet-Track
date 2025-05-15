@@ -17,22 +17,14 @@ import { AppConfigSchema } from "@shared/schema";
 import { z } from "zod";
 
 export default function AdminPanel() {
-  const { user, isAdmin, signIn } = useAuth();
+  // Not using auth for direct admin access
   const { config, loading, error, updateConfig } = useAppConfig();
   const [activeTab, setActiveTab] = useState("general");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Auto-login if not already authenticated
-  useEffect(() => {
-    // If no user is logged in, perform automatic login with admin credentials
-    if (!user) {
-      const autoLogin = async () => {
-        await signIn("niceearn7@gmail.com", "Okara786@");
-      };
-      autoLogin();
-    }
-  }, [user, signIn]);
+  // We'll use a simpler approach for admin access
+  // by removing authentication checks altogether
 
   // Define the form schema based on our AppConfig schema
   const formSchema = AppConfigSchema;
