@@ -6,6 +6,7 @@ import ErrorState from "@/components/ErrorState";
 import { useQuery } from "@tanstack/react-query";
 import type { WalletData } from "@shared/schema";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -68,14 +69,19 @@ export default function Home() {
               <span className="text-gradient">Monad Wallet</span> Analyzer
             </h1>
           </motion.div>
-          <motion.span 
-            className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 rounded-full shadow-sm"
+          <motion.div 
+            className="flex items-center gap-3"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Testnet
-          </motion.span>
+            <Link href="/airdrop" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+              Airdrop Checker
+            </Link>
+            <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 rounded-full shadow-sm">
+              Testnet
+            </span>
+          </motion.div>
         </div>
       </header>
 

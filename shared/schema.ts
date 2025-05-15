@@ -2,6 +2,30 @@ import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Schema for wallet airdrop eligibility criteria
+export const AirdropCriteriaSchema = z.object({
+  ethTransactions: z.object({
+    required: z.number(),
+    actual: z.number(),
+    isEligible: z.boolean(),
+  }),
+  nadsNft: z.object({
+    required: z.boolean(),
+    actual: z.boolean(),
+    isEligible: z.boolean(),
+  }),
+  monBalance: z.object({
+    required: z.string(),
+    actual: z.string(),
+    isEligible: z.boolean(),
+  }),
+  monadTransactions: z.object({
+    required: z.number(),
+    actual: z.number(),
+    isEligible: z.boolean(),
+  }),
+});
+
 // Schema for wallet data responses
 export const WalletDataSchema = z.object({
   address: z.string(),
@@ -11,6 +35,12 @@ export const WalletDataSchema = z.object({
   uniqueContracts: z.number(),
   hasNft: z.boolean(),
   isEarlyAdopter: z.boolean(),
+  // Add airdrop eligibility criteria
+  airdropEligibility: z.object({
+    criteria: AirdropCriteriaSchema,
+    isEligible: z.boolean(),
+    message: z.string(),
+  }),
 });
 
 export type WalletData = z.infer<typeof WalletDataSchema>;
