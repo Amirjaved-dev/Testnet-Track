@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, CheckCircle, XCircle, Search, Loader2, ExternalLink, AlertTriangle, Copy, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import AdvertisementDisplay from "@/components/Advertisement";
 
 export default function AirdropChecker() {
   const { toast } = useToast();
@@ -119,28 +120,43 @@ export default function AirdropChecker() {
       </header>
 
       <main className="flex-1 relative z-10 max-w-4xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Note card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6"
-        >
-          <Card className="bg-yellow-50 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-start">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
-                <div className="text-sm text-yellow-700">
-                  <p className="font-medium mb-1">Important Note</p>
-                  <p>
-                    This is an <strong>unofficial</strong> airdrop eligibility checker created by developers of this tool, not by Monad team. 
-                    The criteria used here are speculative and not officially confirmed. Results should be considered for informational purposes only.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            {/* Note card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-6"
+            >
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <div className="text-sm text-yellow-700">
+                      <p className="font-medium mb-1">Important Note</p>
+                      <p>
+                        This is an <strong>unofficial</strong> airdrop eligibility checker created by developers of this tool, not by Monad team. 
+                        The criteria used here are speculative and not officially confirmed. Results should be considered for informational purposes only.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+          
+          {/* Advertisement area */}
+          <div className="md:col-span-1">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <AdvertisementDisplay placement="airdrop" className="mb-4" />
+            </motion.div>
+          </div>
+        </div>
 
         {/* Search form */}
         <motion.div

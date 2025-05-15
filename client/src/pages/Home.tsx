@@ -3,6 +3,7 @@ import WalletForm from "@/components/WalletForm";
 import WalletDetails from "@/components/WalletDetails";
 import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
+import AdvertisementDisplay from "@/components/Advertisement";
 import { useQuery } from "@tanstack/react-query";
 import type { WalletData } from "@shared/schema";
 import { motion } from "framer-motion";
@@ -85,46 +86,63 @@ export default function Home() {
       </header>
 
       <main className="flex-1 relative z-10 max-w-4xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <WalletForm onSubmit={handleSubmit} isLoading={isLoading} />
-        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <WalletForm onSubmit={handleSubmit} isLoading={isLoading} />
+            </motion.div>
 
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            <LoadingState />
-          </motion.div>
-        )}
-        
-        {!isLoading && !isError && walletData && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <WalletDetails walletData={walletData} />
-          </motion.div>
-        )}
-        
-        {isError && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            <ErrorState 
-              error={error as Error} 
-              onRetry={handleRetry} 
-            />
-          </motion.div>
-        )}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <LoadingState />
+              </motion.div>
+            )}
+            
+            {!isLoading && !isError && walletData && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <WalletDetails walletData={walletData} />
+              </motion.div>
+            )}
+            
+            {isError && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <ErrorState 
+                  error={error as Error} 
+                  onRetry={handleRetry} 
+                />
+              </motion.div>
+            )}
+          </div>
+          
+          {/* Advertisement Sidebar */}
+          <div className="md:col-span-1">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="sticky top-6"
+            >
+              <AdvertisementDisplay placement="home" className="mb-4" />
+              <AdvertisementDisplay placement="sidebar" className="mb-4" />
+            </motion.div>
+          </div>
+        </div>
       </main>
 
       <footer className="relative z-10 bg-white border-t border-gray-200 mt-10">
