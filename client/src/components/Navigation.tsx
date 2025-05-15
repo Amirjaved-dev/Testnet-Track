@@ -1,11 +1,11 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogOut, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 
 export default function Navigation() {
   const [location] = useLocation();
-  const { user, logoutMutation, isLoading } = useAuth();
+  const { user } = useAuth();
 
   return (
     <nav className="bg-gradient-to-r from-primary to-secondary text-white shadow-md">
@@ -31,7 +31,8 @@ export default function Navigation() {
             Airdrop Checker
           </Link>
           
-          {user?.isAdmin && (
+          {user?.isAdmin ? (
+            // Show admin link if logged in as admin
             <Link 
               href="/admin"
               className={`hover:text-white/80 flex items-center gap-1 ${location.startsWith('/admin') ? 'font-bold underline' : ''}`}
@@ -39,41 +40,13 @@ export default function Navigation() {
               <Settings className="h-4 w-4" />
               Admin
             </Link>
-          )}
-          
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">
-                Hi, {user.username}
-              </span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-                className="hover:bg-white/20 text-white"
-              >
-                {logoutMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <LogOut className="h-4 w-4 mr-1" />
-                    Logout
-                  </>
-                )}
-              </Button>
-            </div>
           ) : (
-            <Link href="/auth">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="hover:bg-white/20 text-white"
-              >
-                Login
-              </Button>
+            // Show admin login link if not logged in
+            <Link 
+              href="/admin/login"
+              className={`hover:text-white/80 ${location === '/admin/login' ? 'font-bold underline' : ''}`}
+            >
+              Admin
             </Link>
           )}
         </div>

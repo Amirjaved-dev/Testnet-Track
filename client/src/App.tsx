@@ -26,7 +26,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/airdrop-checker" component={AirdropChecker} />
           <Route path="/airdrop" component={AirdropChecker} />
-          <Route path="/auth" component={AuthPage} />
+          <Route path="/admin/login" component={AuthPage} />
           
           {/* Protected Admin Routes */}
           <ProtectedRoute path="/admin" component={Admin} />

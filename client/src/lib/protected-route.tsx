@@ -21,19 +21,11 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user) {
+  // All paths are admin-only because we're only using this for admin routes
+  if (!user || !user.isAdmin) {
     return (
       <Route path={path}>
-        <Redirect to="/auth" />
-      </Route>
-    );
-  }
-
-  // For admin-only routes
-  if (path.startsWith("/admin") && !user.isAdmin) {
-    return (
-      <Route path={path}>
-        <Redirect to="/" />
+        <Redirect to="/admin/login" />
       </Route>
     );
   }
