@@ -24,7 +24,9 @@ export class MemStorage implements IStorage {
     // Add demo admin user
     this.createUser({
       username: "admin",
-      password: "admin123"
+      password: "admin123",
+      email: "admin@demo.com",
+      isAdmin: true
     }).then(user => {
       log("Added demo admin user to in-memory storage", "storage");
     });
@@ -42,7 +44,14 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      createdAt: new Date().toISOString(),
+      // Default values for optional fields if not provided
+      isAdmin: insertUser.isAdmin ?? false,
+      email: insertUser.email ?? null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -66,6 +75,9 @@ export class DbStorage implements IStorage {
         id: row.id,
         username: row.username,
         password: row.password,
+        isAdmin: row.is_admin || false,
+        email: row.email || null,
+        createdAt: row.created_at || new Date().toISOString()
       };
     } catch (error) {
       console.error('Error getting user by ID:', error);
@@ -90,6 +102,9 @@ export class DbStorage implements IStorage {
         id: row.id,
         username: row.username,
         password: row.password,
+        isAdmin: row.is_admin || false,
+        email: row.email || null,
+        createdAt: row.created_at || new Date().toISOString()
       };
     } catch (error) {
       console.error('Error getting user by username:', error);
@@ -105,10 +120,13 @@ export class DbStorage implements IStorage {
       }
 
       const hashedPassword = await bcrypt.hash(insertUser.password, 10);
+      const isAdmin = insertUser.isAdmin ?? false;
+      const email = insertUser.email ?? null;
+      const createdAt = new Date().toISOString();
 
       const result = await client.query(
-        'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id',
-        [insertUser.username, hashedPassword]
+        'INSERT INTO users (username, password, is_admin, email, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+        [insertUser.username, hashedPassword, isAdmin, email, createdAt]
       );
 
       const id = result.rows[0].id;
@@ -116,6 +134,9 @@ export class DbStorage implements IStorage {
         id,
         username: insertUser.username,
         password: hashedPassword,
+        isAdmin,
+        email,
+        createdAt
       };
     } catch (error) {
       console.error('Error creating user:', error);

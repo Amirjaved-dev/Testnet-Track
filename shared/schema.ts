@@ -63,16 +63,23 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  isAdmin: boolean("is_admin").notNull().default(false),
-  email: text("email").notNull().unique(),
-  createdAt: text("created_at").notNull().default(new Date().toISOString()),
+  isAdmin: boolean("is_admin").default(false),
+  email: text("email"),
+  createdAt: text("created_at").default(new Date().toISOString()),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+}).partial({
   email: true,
   isAdmin: true,
+});
+
+// For the server-side auth implementation
+export const userAuthSchema = z.object({
+  username: z.string().min(3),
+  password: z.string().min(6),
 });
 
 export const appSettings = pgTable("app_settings", {
@@ -121,7 +128,14 @@ export const insertAdvertisementSchema = createInsertSchema(advertisements).pick
 
 // Types for the schemas
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type User = {
+  id: number;
+  username: string;
+  password: string;
+  isAdmin: boolean | null;
+  email: string | null;
+  createdAt: string | null;
+};
 
 export type InsertAppSetting = z.infer<typeof insertAppSettingsSchema>;
 export type AppSetting = typeof appSettings.$inferSelect;

@@ -4,8 +4,18 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { WalletAddressSchema } from "@shared/schema";
 import { getWalletData } from "./services/monadService";
+import { setupAuth } from "./auth";
+import { initDb } from "./db";
+import { log } from "./vite";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize database
+  const dbInitialized = await initDb();
+  log(`Database initialization ${dbInitialized ? 'successful' : 'failed'}`, 'routes');
+  
+  // Set up authentication
+  await setupAuth(app);
+  
   // Get wallet data by address
   app.get("/api/wallet/:address", async (req, res, next) => {
     try {
