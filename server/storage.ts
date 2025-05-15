@@ -42,6 +42,15 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async isAdmin(userId: number): Promise<boolean> {
+    const user = await this.getUser(userId);
+    // Special case for demo admin user
+    if (user?.username === 'admin') {
+      return true;
+    }
+    return user?.isAdmin === true;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
     const user: User = { 

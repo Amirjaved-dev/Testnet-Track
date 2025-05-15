@@ -73,8 +73,15 @@ export async function setupAuth(app: Express) {
         
         // Check if user is admin
         let isAdmin = false;
-        if (storage.isAdmin) {
+        
+        // Special case for the admin user
+        if (username === 'admin') {
+          isAdmin = true;
+        } else if (storage.isAdmin) {
           isAdmin = await storage.isAdmin(user.id);
+        } else if (user.isAdmin) {
+          // Directly check the property as a fallback
+          isAdmin = !!user.isAdmin;
         }
         
         log(`Login successful: ${username} (admin: ${isAdmin})`, "auth");
@@ -105,8 +112,15 @@ export async function setupAuth(app: Express) {
       
       // Check if user is admin
       let isAdmin = false;
-      if (storage.isAdmin) {
+      
+      // Special case for the admin user
+      if (user.username === 'admin') {
+        isAdmin = true;
+      } else if (storage.isAdmin) {
         isAdmin = await storage.isAdmin(user.id);
+      } else if (user.isAdmin) {
+        // Directly check the property as a fallback
+        isAdmin = !!user.isAdmin;
       }
       
       done(null, {
