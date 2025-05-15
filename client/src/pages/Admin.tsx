@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useAppConfig } from "@/lib/appConfig";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export default function AdminPanel() {
   const { user, isAdmin } = useAuth();
   const { config, loading, error, updateConfig } = useAppConfig();
   const [activeTab, setActiveTab] = useState("general");
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   // Redirect non-admin users
@@ -35,10 +35,10 @@ export default function AdminPanel() {
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button variant="default" onClick={() => navigate("/login")}>
+            <Button variant="default" onClick={() => setLocation("/login")}>
               Login
             </Button>
-            <Button variant="outline" className="ml-2" onClick={() => navigate("/")}>
+            <Button variant="outline" className="ml-2" onClick={() => setLocation("/")}>
               Back to Home
             </Button>
           </CardFooter>
@@ -92,7 +92,7 @@ export default function AdminPanel() {
     return (
       <div className="container mx-auto py-10 text-center">
         <p className="text-red-500">Error: {error}</p>
-        <Button onClick={() => navigate("/")} className="mt-4">
+        <Button onClick={() => setLocation("/")} className="mt-4">
           Back to Home
         </Button>
       </div>
@@ -103,7 +103,7 @@ export default function AdminPanel() {
     <div className="container mx-auto py-10 px-4 max-w-5xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <Button onClick={() => navigate("/")} variant="outline">
+        <Button onClick={() => setLocation("/")} variant="outline">
           Back to Site
         </Button>
       </div>
