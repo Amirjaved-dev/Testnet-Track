@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AppConfigSchema } from "@shared/schema";
 import { z } from "zod";
+import { AlertTriangle as AlertTriangleIcon, Info as InfoIcon } from "lucide-react";
 
 export default function AdminPanel() {
   const { user, isAdmin } = useAuth();
@@ -87,25 +88,34 @@ export default function AdminPanel() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="container mx-auto py-10 text-center">
-        <p className="text-red-500">Error: {error}</p>
-        <Button onClick={() => setLocation("/")} className="mt-4">
-          Back to Home
-        </Button>
-      </div>
-    );
-  }
+  // We'll handle errors inline instead of showing a dedicated error page
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-5xl">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Admin Panel</h1>
         <Button onClick={() => setLocation("/")} variant="outline">
           Back to Site
         </Button>
       </div>
+      
+      {error && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md">
+          <div className="flex items-start">
+            <AlertTriangleIcon className="h-5 w-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h3 className="font-medium text-amber-800">Database Connection Notice</h3>
+              <p className="text-amber-700 mt-1">
+                Settings will be stored in-memory for this session only.
+                Any changes you make will be reset when the application restarts.
+              </p>
+              <p className="text-amber-700 mt-2 text-sm">
+                To enable persistent settings, please connect to a database.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card className="hover:shadow-md transition-shadow">
