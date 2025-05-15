@@ -42,9 +42,11 @@ export default function AdminPanel() {
   });
 
   // Update form values when config loads
-  if (!form.formState.isDirty && !loading && config) {
-    form.reset(config);
-  }
+  useEffect(() => {
+    if (!loading && config && !form.formState.isDirty) {
+      form.reset(config);
+    }
+  }, [loading, config, form]);
 
   // Submit handler
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
