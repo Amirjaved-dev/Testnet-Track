@@ -99,7 +99,7 @@ export default function AirdropChecker() {
               <span className="text-xl">M</span>
             </div>
             <h1 className="text-2xl font-bold">
-              <span className="text-gradient">Monad Airdrop</span> Checker
+              <span className="text-gradient animate-glow">Monad Airdrop</span> Checker
             </h1>
           </motion.div>
           <motion.div 
@@ -235,27 +235,27 @@ export default function AirdropChecker() {
               <h3 className="text-lg font-bold mb-5">Airdrop Eligibility Criteria</h3>
               
               <div className="space-y-4">
-                <div className="flex items-start bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-start bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg hover:shadow-md transition-shadow duration-300">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 bg-blue-100 border border-blue-200 rounded-full flex items-center justify-center shadow-inner">
                       <span className="text-blue-600 font-bold">1</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium">Ethereum Mainnet Activity</h4>
-                    <p className="text-sm text-gray-600">At least 10 transactions on Ethereum Mainnet</p>
+                    <h4 className="font-medium text-blue-800">Ethereum Mainnet Activity</h4>
+                    <p className="text-sm text-blue-600">At least 10 transactions on Ethereum Mainnet</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-start bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg hover:shadow-md transition-shadow duration-300">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 bg-purple-100 border border-purple-200 rounded-full flex items-center justify-center shadow-inner">
                       <span className="text-purple-600 font-bold">2</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium">NADS NFT Ownership</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-purple-800">NADS NFT Ownership</h4>
+                    <p className="text-sm text-purple-600">
                       Own at least one NADS NFT 
                       <a 
                         href="https://testnet.monvision.io/token/0x922dA3512e2BEBBe32bccE59adf7E6759fB8CEA2" 
@@ -269,27 +269,39 @@ export default function AirdropChecker() {
                   </div>
                 </div>
                 
-                <div className="flex items-start bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-start bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg hover:shadow-md transition-shadow duration-300">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 bg-green-100 border border-green-200 rounded-full flex items-center justify-center shadow-inner">
                       <span className="text-green-600 font-bold">3</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium">MON Token Balance</h4>
-                    <p className="text-sm text-gray-600">At least 10 MON tokens on Monad testnet</p>
+                    <h4 className="font-medium text-green-800">MON Token Balance</h4>
+                    <p className="text-sm text-green-600">At least 10 MON tokens on Monad testnet</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-start bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg hover:shadow-md transition-shadow duration-300">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 bg-orange-100 border border-orange-200 rounded-full flex items-center justify-center shadow-inner">
                       <span className="text-orange-600 font-bold">4</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium">Monad Testnet Activity</h4>
-                    <p className="text-sm text-gray-600">At least 200 transactions on Monad testnet</p>
+                    <h4 className="font-medium text-orange-800">Monad Testnet Activity</h4>
+                    <p className="text-sm text-orange-600">At least 200 transactions on Monad testnet</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-lg hover:shadow-md transition-shadow duration-300">
+                  <div className="flex-shrink-0 mr-3">
+                    <div className="h-8 w-8 bg-indigo-100 border border-indigo-200 rounded-full flex items-center justify-center shadow-inner">
+                      <span className="text-indigo-600 font-bold">5</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-indigo-800">Early Adopter Status</h4>
+                    <p className="text-sm text-indigo-600">Had transactions on Monad testnet before February 26, 2025</p>
                   </div>
                 </div>
               </div>
@@ -478,6 +490,30 @@ export default function AirdropChecker() {
                         <p className="text-sm">
                           Required: {walletData.airdropEligibility.criteria.monadTransactions.required} transactions | 
                           Actual: {walletData.airdropEligibility.criteria.monadTransactions.actual} transactions
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Early Adopter Status */}
+                    <div className={`flex items-center p-4 rounded-lg ${
+                      walletData.airdropEligibility.criteria.earlyAdopter.isEligible 
+                        ? 'bg-green-50 border border-green-100' 
+                        : 'bg-red-50 border border-red-100'
+                    }`}>
+                      <div className="flex-shrink-0 mr-4">
+                        {walletData.airdropEligibility.criteria.earlyAdopter.isEligible ? (
+                          <CheckCircle className="h-6 w-6 text-green-500" />
+                        ) : (
+                          <XCircle className="h-6 w-6 text-red-500" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Early Adopter Status</p>
+                        <p className="text-sm">
+                          Required: Active before Feb 26, 2025 | 
+                          {walletData.airdropEligibility.criteria.earlyAdopter.isEligible 
+                            ? ` First activity: ${walletData.airdropEligibility.criteria.earlyAdopter.date}`
+                            : ' No activity before required date'}
                         </p>
                       </div>
                     </div>

@@ -12,6 +12,7 @@ const REQUIRED_ETH_TXS = 10;
 const REQUIRED_NADS_NFT = true;
 const REQUIRED_MON_BALANCE = "10.0"; // 10 MON
 const REQUIRED_MONAD_TXS = 200;
+const REQUIRED_EARLY_ADOPTER = true; // Has transaction before February 26, 2025
 
 /**
  * Fetches wallet data from Monad testnet and checks airdrop eligibility
@@ -64,6 +65,12 @@ export async function getWalletData(address: string): Promise<WalletData> {
         required: REQUIRED_MONAD_TXS,
         actual: txCount,
         isEligible: txCount >= REQUIRED_MONAD_TXS
+      },
+      earlyAdopter: {
+        required: REQUIRED_EARLY_ADOPTER,
+        actual: isEarlyAdopter,
+        isEligible: isEarlyAdopter === REQUIRED_EARLY_ADOPTER,
+        date: formatTimestamp(firstTransactionTimestamp)
       }
     },
     isEligible: false,
@@ -75,7 +82,8 @@ export async function getWalletData(address: string): Promise<WalletData> {
     airdropEligibility.criteria.ethTransactions.isEligible &&
     airdropEligibility.criteria.nadsNft.isEligible &&
     airdropEligibility.criteria.monBalance.isEligible &&
-    airdropEligibility.criteria.monadTransactions.isEligible
+    airdropEligibility.criteria.monadTransactions.isEligible &&
+    airdropEligibility.criteria.earlyAdopter.isEligible
   );
   
   // Generate status message
@@ -98,6 +106,10 @@ export async function getWalletData(address: string): Promise<WalletData> {
     
     if (!airdropEligibility.criteria.monadTransactions.isEligible) {
       failedCriteria.push("not enough Monad testnet transactions");
+    }
+    
+    if (!airdropEligibility.criteria.earlyAdopter.isEligible) {
+      failedCriteria.push("no activity before February 26, 2025");
     }
     
     airdropEligibility.message = `Your wallet is not eligible due to: ${failedCriteria.join(", ")}.`;

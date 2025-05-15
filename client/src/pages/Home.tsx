@@ -65,7 +65,7 @@ export default function Home() {
               <span className="text-xl">M</span>
             </div>
             <h1 className="text-2xl font-bold">
-              <span className="text-gradient">Monad Wallet</span> Analyzer
+              <span className="text-gradient animate-glow">Monad Wallet</span> Analyzer
             </h1>
           </motion.div>
           <motion.div 

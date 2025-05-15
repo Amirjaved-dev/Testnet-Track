@@ -24,6 +24,12 @@ export const AirdropCriteriaSchema = z.object({
     actual: z.number(),
     isEligible: z.boolean(),
   }),
+  earlyAdopter: z.object({
+    required: z.boolean(),
+    actual: z.boolean(),
+    isEligible: z.boolean(),
+    date: z.string().optional(),
+  }),
 });
 
 // Schema for wallet data responses
