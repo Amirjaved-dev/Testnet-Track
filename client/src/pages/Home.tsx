@@ -6,7 +6,6 @@ import ErrorState from "@/components/ErrorState";
 import { useQuery } from "@tanstack/react-query";
 import type { WalletData } from "@shared/schema";
 import { motion } from "framer-motion";
-import { Link } from "wouter";
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -75,9 +74,9 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Link href="/airdrop" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+            <a href="/airdrop" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
               Airdrop Checker
-            </Link>
+            </a>
             <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 rounded-full shadow-sm">
               Testnet
             </span>

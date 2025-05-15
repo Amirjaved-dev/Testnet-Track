@@ -13,7 +13,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, CheckCircle, XCircle, Search, Loader2, ExternalLink, AlertTriangle, Copy, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
 
 export default function AirdropChecker() {
   const { toast } = useToast();
@@ -109,9 +108,9 @@ export default function AirdropChecker() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Link href="/" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+            <a href="/" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
               Wallet Analyzer
-            </Link>
+            </a>
             <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 rounded-full shadow-sm">
               Unofficial
             </span>
