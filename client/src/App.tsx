@@ -13,6 +13,7 @@ import Advertisements from "@/pages/Advertisements";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/lib/auth";
 import { createDummyAdvertisements } from "@/lib/helpers/db";
+import { setupSupabaseTables, createDefaultAdminUser } from "@/lib/helpers/supabaseSetup";
 
 function Router() {
   
@@ -41,19 +42,31 @@ function Router() {
 }
 
 function App() {
-  // Initialize dummy advertisements on app startup
+  // Initialize Supabase database tables and default admin user
   useEffect(() => {
-    createDummyAdvertisements()
-      .then(success => {
-        if (success) {
+    const initializeApp = async () => {
+      try {
+        // Set up database tables
+        const tablesSetup = await setupSupabaseTables();
+        console.log('Supabase tables setup result:', tablesSetup);
+        
+        // Create default admin user
+        const adminUserCreated = await createDefaultAdminUser();
+        console.log('Admin user creation result:', adminUserCreated);
+        
+        // Initialize dummy advertisements for demo purposes
+        const adsCreated = await createDummyAdvertisements();
+        if (adsCreated) {
           console.log('Dummy advertisements initialized successfully');
         } else {
           console.warn('Failed to initialize dummy advertisements');
         }
-      })
-      .catch(error => {
-        console.error('Error initializing dummy advertisements:', error);
-      });
+      } catch (error) {
+        console.error('Error during app initialization:', error);
+      }
+    };
+    
+    initializeApp();
   }, []);
   
   return (

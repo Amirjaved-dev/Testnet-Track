@@ -102,24 +102,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
 
     try {
-      // Special case handling for demo purposes
-      // Skip Supabase and grant direct access if admin credentials are used
-      if (email === "admin@demo.com" && password === "admin123") {
-        // Manually set admin status
-        setIsAdmin(true);
-        // Create a mock user for UI purposes
-        setUser({
-          id: 'demo-admin-id',
-          email: 'admin@demo.com',
-          app_metadata: {},
-          user_metadata: { username: 'Admin' },
-          aud: 'authenticated',
-          created_at: ''
-        } as User);
-        return;
-      }
-
-      // Regular auth flow with Supabase
+      // Use Supabase auth with proper credentials
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,

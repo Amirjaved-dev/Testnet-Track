@@ -57,12 +57,15 @@ export default function Login() {
           <CardDescription>
             Enter your credentials to access your account.
             <div className="mt-2 p-3 bg-blue-50 text-blue-700 text-sm rounded border border-blue-200">
-              <div className="font-semibold mb-1">Demo Credentials:</div>
+              <div className="font-semibold mb-1">Supabase Admin Credentials:</div>
               <div className="grid grid-cols-2 gap-1">
                 <div className="font-medium">Email:</div>
                 <div>admin@demo.com</div>
                 <div className="font-medium">Password:</div>
                 <div>admin123</div>
+              </div>
+              <div className="mt-1 text-xs text-blue-600">
+                Authenticated with Supabase. A default admin account is created automatically.
               </div>
             </div>
           </CardDescription>
