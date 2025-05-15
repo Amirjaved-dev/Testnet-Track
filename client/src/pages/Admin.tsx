@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useAppConfig } from "@/lib/appConfig";
@@ -17,7 +17,7 @@ import { AppConfigSchema } from "@shared/schema";
 import { z } from "zod";
 
 export default function AdminPanel() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, signIn } = useAuth();
   const { config, loading, error, updateConfig } = useAppConfig();
   const [activeTab, setActiveTab] = useState("general");
   const [, setLocation] = useLocation();
