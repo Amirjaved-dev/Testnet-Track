@@ -56,7 +56,13 @@ async function rpcRequest(method: string, params: any[] = []): Promise<any> {
       })
     });
 
-    const data = await response.json();
+    const data = await response.json() as {
+      result?: any;
+      error?: {
+        message?: string;
+        code?: number;
+      };
+    };
     
     if (data.error) {
       throw new Error(`RPC Error: ${data.error.message || JSON.stringify(data.error)}`);
@@ -117,51 +123,68 @@ async function getTransactionDetails(address: string): Promise<{
     const latestBlockTimestamp = parseInt(latestBlockInfo.timestamp, 16);
     
     // Try to get specific past transactions by block number
-    // Breaking up the range into chunks to avoid the 100 block limit
-    const blockRanges = [];
+    // Breaking up the range into smaller chunks to respect the 100 block limit
     
-    // We'll check specific ranges known to contain early transactions
-    // Feb 2025 range and other ranges of interest
-    const checkRanges = [
-      // Feb 2025 range (for early adopter status)
-      { from: "0x700000", to: "0x780000" }, // Example range around Feb 2025
-      // Other ranges (most recent blocks)
-      { from: toHex(Math.max(0, latestBlock - 100)), to: latestBlockHex }
-    ];
+    // Focus on the most recent blocks (limited to the last 100)
+    const startBlock = Math.max(0, latestBlock - 100);
+    try {
+      const recentFilter = {
+        fromBlock: toHex(startBlock),
+        toBlock: latestBlockHex,
+        address: null, // We're filtering by address in the topics
+        topics: [null, `0x000000000000000000000000${address.slice(2).toLowerCase()}`]
+      };
+      
+      const recentLogs = await rpcRequest("eth_getLogs", [recentFilter]);
+      
+      for (const log of recentLogs) {
+        if (log.address) {
+          contracts.add(log.address);
+        }
+        
+        // Get block info to extract timestamp
+        const blockInfo = await rpcRequest("eth_getBlockByNumber", [log.blockNumber, false]);
+        const timestamp = parseInt(blockInfo.timestamp, 16);
+        
+        if (timestamp > lastBlockTimestamp) {
+          lastBlockTimestamp = timestamp;
+        }
+        
+        if (timestamp < firstBlockTimestamp) {
+          firstBlockTimestamp = timestamp;
+        }
+      }
+    } catch (error) {
+      console.log(`Error fetching recent logs:`, error);
+    }
     
-    for (const range of checkRanges) {
-      try {
-        // Check a specific block range
-        const rangeFilter = {
-          fromBlock: range.from,
-          toBlock: range.to,
+    // For early adopter status, we'll check a specific key block number corresponding to February 26, 2025
+    // This is a simplification - in a real-world scenario, we'd need a more robust approach
+    try {
+      // Get a block around the cutoff date (simplified approach)
+      const earlyAdopterBlockInfo = await rpcRequest("eth_getBlockByNumber", ["0x700000", false]);
+      const earlyAdopterBlockTimestamp = parseInt(earlyAdopterBlockInfo.timestamp, 16);
+      
+      // If we have transactions, check if any of them might be early transactions
+      if (txCount > 0) {
+        // For demonstration, we'll use an alternative approach to determine if this 
+        // address might have been active before the cutoff
+        const pastTxsFilter = {
+          fromBlock: "0x700000", // A block around Feb 2025
+          toBlock: "0x700010",   // Just 16 blocks to stay well within limits
           address: null,
           topics: [null, `0x000000000000000000000000${address.slice(2).toLowerCase()}`]
         };
         
-        const rangeLogs = await rpcRequest("eth_getLogs", [rangeFilter]);
+        const pastLogs = await rpcRequest("eth_getLogs", [pastTxsFilter]);
         
-        for (const log of rangeLogs) {
-          if (log.address) {
-            contracts.add(log.address);
-          }
-          
-          // Get block info to extract timestamp
-          const blockInfo = await rpcRequest("eth_getBlockByNumber", [log.blockNumber, false]);
-          const timestamp = parseInt(blockInfo.timestamp, 16);
-          
-          if (timestamp > lastBlockTimestamp) {
-            lastBlockTimestamp = timestamp;
-          }
-          
-          if (timestamp < firstBlockTimestamp) {
-            firstBlockTimestamp = timestamp;
-          }
+        if (pastLogs && pastLogs.length > 0) {
+          // We found some early activity!
+          firstBlockTimestamp = earlyAdopterBlockTimestamp - 86400; // One day before cutoff
         }
-      } catch (error) {
-        console.log(`Error with range ${range.from} to ${range.to}:`, error);
-        // Continue with other ranges
       }
+    } catch (error) {
+      console.log(`Error checking early adopter status:`, error);
     }
     
     // If we have transaction count but couldn't find any logs/timestamps,
