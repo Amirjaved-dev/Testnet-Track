@@ -12,16 +12,21 @@ const EARLY_ADOPTER_CUTOFF = 1708905600; // February 26, 2025
 export async function getWalletData(address: string): Promise<WalletData> {
   // Get balance
   const balance = await getBalance(address);
-  
-  // Get transaction count
-  const txCount = await getTransactionCount(address);
+
+  // Instead of just using getTransactionCount, let's get both sent and received transactions
+  // First get the "nonce" (number of sent transactions)
+  const sentTxCount = await getTransactionCount(address);
   
   // Get transactions to find first and last transaction timestamps and unique contracts
   const { 
     uniqueContracts, 
     lastActivityTimestamp, 
-    firstTransactionTimestamp 
+    firstTransactionTimestamp,
+    receivedTxCount  // Add this to get the received transaction count
   } = await getTransactionDetails(address);
+  
+  // Calculate total transactions - sum of sent and received transactions
+  const totalTx = sentTxCount + receivedTxCount;
   
   // Check if wallet owns NFT from specific contract
   const hasNft = await checkNftOwnership(address);
@@ -32,7 +37,7 @@ export async function getWalletData(address: string): Promise<WalletData> {
   return {
     address,
     balance,
-    totalTransactions: txCount,
+    totalTransactions: totalTx,
     lastActivity: formatTimestamp(lastActivityTimestamp),
     uniqueContracts,
     hasNft,
@@ -98,6 +103,7 @@ async function getTransactionDetails(address: string): Promise<{
   uniqueContracts: number; 
   lastActivityTimestamp: number;
   firstTransactionTimestamp: number;
+  receivedTxCount: number; // Add received transaction count
 }> {
   try {
     // Get latest block number
@@ -187,6 +193,39 @@ async function getTransactionDetails(address: string): Promise<{
       console.log(`Error checking early adopter status:`, error);
     }
     
+    // Count received transactions based on log entries
+    // Each log entry represents a transaction or event the wallet received
+    let receivedTxCount = 0;
+    
+    // We'll try to get a more accurate transaction count using the contract interactions logs
+    try {
+      // Get transactions to the wallet by creating a filter looking for transfers to this address
+      const transferFilter = {
+        fromBlock: "0x0",
+        toBlock: "latest",
+        topics: [
+          // ERC20/721 Transfer event signature
+          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          null,
+          `0x000000000000000000000000${address.slice(2).toLowerCase()}`
+        ]
+      };
+      
+      // We'll try to fetch this, but it might exceed log limits
+      try {
+        const receivedLogs = await rpcRequest("eth_getLogs", [transferFilter]);
+        receivedTxCount = receivedLogs.length;
+      } catch (error) {
+        // If we hit limits, estimate based on other data
+        console.log("Error fetching received transactions:", error);
+        // Fallback: Use the contract count as a proxy for received transactions
+        receivedTxCount = contracts.size;
+      }
+    } catch (error) {
+      console.log("Error counting received transactions:", error);
+      receivedTxCount = 0;
+    }
+    
     // If we have transaction count but couldn't find any logs/timestamps,
     // use the most recent block as the last activity time
     if (lastBlockTimestamp === 0 && txCount > 0) {
@@ -208,17 +247,20 @@ async function getTransactionDetails(address: string): Promise<{
       firstBlockTimestamp = EARLY_ADOPTER_CUTOFF + 1; // Not an early adopter
     }
     
+    // Use transaction metrics from logs
     return {
       uniqueContracts: Math.max(contracts.size, txCount > 0 ? 1 : 0),
       lastActivityTimestamp: lastBlockTimestamp,
-      firstTransactionTimestamp: firstBlockTimestamp
+      firstTransactionTimestamp: firstBlockTimestamp,
+      receivedTxCount: Math.max(0, receivedTxCount) // Ensure non-negative
     };
   } catch (error) {
     console.error("Error getting transaction details:", error);
     return {
       uniqueContracts: 0,
       lastActivityTimestamp: Math.floor(Date.now() / 1000),
-      firstTransactionTimestamp: EARLY_ADOPTER_CUTOFF + 1 // Not an early adopter
+      firstTransactionTimestamp: EARLY_ADOPTER_CUTOFF + 1, // Not an early adopter
+      receivedTxCount: 0 // No received transactions in error case
     };
   }
 }
