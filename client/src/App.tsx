@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AirdropChecker from "@/pages/AirdropChecker";
+import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
 import Advertisements from "@/pages/Advertisements";
 import Navigation from "@/components/Navigation";
@@ -21,6 +22,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/airdrop-checker" component={AirdropChecker} />
+          <Route path="/login" component={Login} />
           <Route path="/admin" component={Admin} />
           <Route path="/admin/advertisements" component={Advertisements} />
           <Route component={NotFound} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-// No longer using auth for direct admin access
+import { useAuth } from "@/lib/auth";
 import { useAppConfig } from "@/lib/appConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,18 @@ import { AppConfigSchema } from "@shared/schema";
 import { z } from "zod";
 
 export default function AdminPanel() {
+  const { user, isAdmin } = useAuth();
   const { config, loading, error, updateConfig } = useAppConfig();
   const [activeTab, setActiveTab] = useState("general");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!user) {
+      setLocation("/login");
+    }
+  }, [user, setLocation]);
 
   // Define the form schema based on our AppConfig schema
   const formSchema = AppConfigSchema;
