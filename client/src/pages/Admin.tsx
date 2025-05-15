@@ -52,10 +52,24 @@ export default function AdminPanel() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       await updateConfig(data);
+      
+      // Show success toast
       toast({
         title: "Settings updated",
         description: "The application settings have been successfully saved.",
       });
+      
+      // Reset form state to consider it "pristine" again
+      form.reset(data);
+      
+      // After a brief delay, redirect to home to see changes
+      setTimeout(() => {
+        setLocation('/');
+        setTimeout(() => {
+          setLocation('/admin');
+        }, 300);
+      }, 1000);
+      
     } catch (err) {
       toast({
         title: "Error",

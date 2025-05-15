@@ -53,22 +53,14 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
       try {
         setLoading(true);
         
-        // Fetch settings from Supabase
-        // First check if the app_settings table exists
-        const { data: tablesData, error: tablesError } = await supabase
-          .from('information_schema.tables')
-          .select('table_name')
-          .eq('table_name', 'app_settings');
+        // Check if database is available by attempting a simple query
+        const { data: healthCheck, error: healthError } = await supabase.from('app_settings').select('count(*)');
         
-        if (tablesError) {
-          console.warn('Error checking for app_settings table:', tablesError.message);
+        // If there's an error, we're likely in in-memory mode
+        if (healthError) {
+          console.log('Using in-memory configuration - database not available');
+          setLoading(false);
           return; // Use default config
-        }
-        
-        // If the table doesn't exist, use default settings
-        if (!tablesData || tablesData.length === 0) {
-          console.info('app_settings table not found, using default config');
-          return;
         }
 
         // Fetch actual settings
@@ -149,36 +141,21 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
     try {
       setLoading(true);
       
-      // First, ensure the app_settings table exists
-      const { data: tablesData, error: tablesError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_name', 'app_settings');
+      // Check if database is available by making a simple query
+      const { data: healthCheck, error: healthError } = await supabase.from('app_settings').select('count(*)');
       
-      if (tablesError) {
-        console.warn('Error checking for app_settings table:', tablesError.message);
+      // If there's an error, we're likely in in-memory mode
+      const useInMemoryMode = !!healthError;
+      
+      if (useInMemoryMode) {
+        console.log('Using in-memory configuration mode');
         // Use local state only
         setConfig(prevConfig => ({
           ...prevConfig,
           ...newConfig,
         }));
+        setLoading(false);
         return; // Exit early
-      }
-      
-      // If the app_settings table doesn't exist, try to create it
-      if (!tablesData || tablesData.length === 0) {
-        console.info('Creating app_settings table...');
-        const { error: createError } = await supabase.rpc('create_app_settings_table');
-        
-        if (createError) {
-          console.error('Failed to create app_settings table:', createError.message);
-          // Fall back to using local state only
-          setConfig(prevConfig => ({
-            ...prevConfig,
-            ...newConfig,
-          }));
-          return; // Exit early
-        }
       }
       
       // Convert the config to flat settings for storage
@@ -220,27 +197,55 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
       
       flattenObject(newConfig);
       
-      // Update each setting in Supabase
-      for (const setting of settings) {
-        const { error: upsertError } = await supabase
-          .from('app_settings')
-          .upsert({
-            key: setting.key,
-            value: setting.value,
-            type: setting.type,
-            updatedAt: new Date().toISOString(),
-          }, { onConflict: 'key' });
+      // Try a bulk upsert first for better performance
+      try {
+        const bulkSettings = settings.map(setting => ({
+          key: setting.key,
+          value: setting.value,
+          type: setting.type,
+          updatedAt: new Date().toISOString(),
+        }));
         
-        if (upsertError) {
-          console.error(`Failed to update setting ${setting.key}:`, upsertError.message);
+        const { error: bulkUpsertError } = await supabase
+          .from('app_settings')
+          .upsert(bulkSettings, { onConflict: 'key' });
+        
+        if (bulkUpsertError) {
+          console.warn('Bulk upsert failed, trying individual updates:', bulkUpsertError.message);
+          
+          // Fallback: process each setting one by one
+          let successCount = 0;
+          for (const setting of settings) {
+            const { error: upsertError } = await supabase
+              .from('app_settings')
+              .upsert({
+                key: setting.key,
+                value: setting.value,
+                type: setting.type,
+                updatedAt: new Date().toISOString(),
+              }, { onConflict: 'key' });
+            
+            if (!upsertError) {
+              successCount++;
+            } else {
+              console.error(`Failed to update setting ${setting.key}:`, upsertError.message);
+            }
+          }
+          
+          console.log(`Successfully updated ${successCount} of ${settings.length} settings individually`);
+        } else {
+          console.log(`Successfully bulk updated all ${settings.length} settings`);
         }
+      } catch (dbError) {
+        console.error('Database operation failed:', dbError);
       }
       
-      // Update local state with the new config
+      // Always update local state with the new config regardless of DB success
       setConfig(prevConfig => ({
         ...prevConfig,
         ...newConfig,
       }));
+      console.log('Local configuration updated successfully');
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
