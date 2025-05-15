@@ -54,6 +54,24 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
         setLoading(true);
         
         // Fetch settings from Supabase
+        // First check if the app_settings table exists
+        const { data: tablesData, error: tablesError } = await supabase
+          .from('information_schema.tables')
+          .select('table_name')
+          .eq('table_name', 'app_settings');
+        
+        if (tablesError) {
+          console.warn('Error checking for app_settings table:', tablesError.message);
+          return; // Use default config
+        }
+        
+        // If the table doesn't exist, use default settings
+        if (!tablesData || tablesData.length === 0) {
+          console.info('app_settings table not found, using default config');
+          return;
+        }
+
+        // Fetch actual settings
         const { data, error: fetchError } = await supabase
           .from('app_settings')
           .select('*');
@@ -131,6 +149,38 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
     try {
       setLoading(true);
       
+      // First, ensure the app_settings table exists
+      const { data: tablesData, error: tablesError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_name', 'app_settings');
+      
+      if (tablesError) {
+        console.warn('Error checking for app_settings table:', tablesError.message);
+        // Use local state only
+        setConfig(prevConfig => ({
+          ...prevConfig,
+          ...newConfig,
+        }));
+        return; // Exit early
+      }
+      
+      // If the app_settings table doesn't exist, try to create it
+      if (!tablesData || tablesData.length === 0) {
+        console.info('Creating app_settings table...');
+        const { error: createError } = await supabase.rpc('create_app_settings_table');
+        
+        if (createError) {
+          console.error('Failed to create app_settings table:', createError.message);
+          // Fall back to using local state only
+          setConfig(prevConfig => ({
+            ...prevConfig,
+            ...newConfig,
+          }));
+          return; // Exit early
+        }
+      }
+      
       // Convert the config to flat settings for storage
       const settings: FlatSetting[] = [];
       
@@ -149,12 +199,12 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
             
             if (Array.isArray(value)) {
               stringValue = JSON.stringify(value);
-              type = 'string'; // Store as string but mark for JSON parsing
+              type = 'object'; // Use 'object' for JSON data
             } else if (value === null || value === undefined) {
               return; // Skip null/undefined values
             } else if (typeof value === 'object') {
               stringValue = JSON.stringify(value);
-              type = 'string'; // Store as string but mark for JSON parsing
+              type = 'object'; // Use 'object' for JSON data
             } else {
               stringValue = String(value);
             }
@@ -182,7 +232,7 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
           }, { onConflict: 'key' });
         
         if (upsertError) {
-          throw new Error(`Failed to update setting ${setting.key}: ${upsertError.message}`);
+          console.error(`Failed to update setting ${setting.key}:`, upsertError.message);
         }
       }
       

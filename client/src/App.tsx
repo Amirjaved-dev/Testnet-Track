@@ -12,6 +12,7 @@ import Admin from "@/pages/Admin";
 import Advertisements from "@/pages/Advertisements";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/lib/auth";
+import { createDummyAdvertisements } from "@/lib/helpers/db";
 
 function Router() {
   
@@ -40,6 +41,21 @@ function Router() {
 }
 
 function App() {
+  // Initialize dummy advertisements on app startup
+  useEffect(() => {
+    createDummyAdvertisements()
+      .then(success => {
+        if (success) {
+          console.log('Dummy advertisements initialized successfully');
+        } else {
+          console.warn('Failed to initialize dummy advertisements');
+        }
+      })
+      .catch(error => {
+        console.error('Error initializing dummy advertisements:', error);
+      });
+  }, []);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
