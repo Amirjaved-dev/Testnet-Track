@@ -102,20 +102,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null);
 
     try {
-      // Hardcoded admin credentials for direct access
-      if (email === "niceearn7@gmail.com" && password === "Okara786@") {
-        // Create a mock user and session
-        const mockUser = {
-          id: "admin-user",
-          email: "niceearn7@gmail.com",
-          user_metadata: { username: "Admin" }
-        };
-        
-        setUser(mockUser as any);
-        setIsAdmin(true);
-        return;
-      }
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,

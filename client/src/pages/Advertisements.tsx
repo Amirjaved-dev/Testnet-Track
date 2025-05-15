@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/lib/auth";
+// No longer using auth for direct admin access
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Advertisement } from "@shared/schema";
@@ -33,7 +33,6 @@ const adFormSchema = z.object({
 type AdFormValues = z.infer<typeof adFormSchema>;
 
 export default function AdvertisementsPage() {
-  const { user, isAdmin, signIn } = useAuth();
   const [, setLocation] = useLocation();
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +40,11 @@ export default function AdvertisementsPage() {
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const { toast } = useToast();
+  
+  // Mock admin user for database operations that need user data
+  const adminUser = {
+    email: "niceearn7@gmail.com"
+  };
 
   // Set up form with react-hook-form
   const form = useForm<AdFormValues>({
@@ -118,7 +122,7 @@ export default function AdvertisementsPage() {
           .insert({
             ...data,
             createdAt: new Date().toISOString(),
-            createdBy: user?.email || "admin",
+            createdBy: adminUser.email,
           });
         
         if (error) {
@@ -231,8 +235,8 @@ export default function AdvertisementsPage() {
     setOpenDialog(true);
   };
 
-  // We'll use a simpler approach for admin access
-  // by removing authentication checks altogether
+  // Fixed advertisement creation to use admin user
+  // without authentication
 
   return (
     <div className="container mx-auto py-8 px-4">

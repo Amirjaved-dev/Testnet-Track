@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/lib/auth";
+// No longer using auth for direct admin access
 import { useAppConfig } from "@/lib/appConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,14 +17,10 @@ import { AppConfigSchema } from "@shared/schema";
 import { z } from "zod";
 
 export default function AdminPanel() {
-  // Not using auth for direct admin access
   const { config, loading, error, updateConfig } = useAppConfig();
   const [activeTab, setActiveTab] = useState("general");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-
-  // We'll use a simpler approach for admin access
-  // by removing authentication checks altogether
 
   // Define the form schema based on our AppConfig schema
   const formSchema = AppConfigSchema;
