@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from './supabase';
 import { AppConfig, AppConfigSchema } from '@shared/schema';
 
@@ -49,7 +49,7 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
 
   // Fetch app settings from Supabase
   useEffect(() => {
-    async function fetchAppSettings() {
+    const fetchAppSettings = async () => {
       try {
         setLoading(true);
         
@@ -114,10 +114,17 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
       } finally {
         setLoading(false);
       }
-    }
+    };
     
     fetchAppSettings();
   }, []);
+  
+  // Helper type for settings
+  type FlatSetting = {
+    key: string;
+    value: string;
+    type: string;
+  };
   
   // Function to update app configuration
   const updateConfig = async (newConfig: Partial<AppConfig>) => {
@@ -125,11 +132,11 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
       setLoading(true);
       
       // Convert the config to flat settings for storage
-      const settings: Array<{key: string, value: string, type: string}> = [];
+      const settings: FlatSetting[] = [];
       
       // Flatten the object for storage
-      function flattenObject(obj: any, prefix = '') {
-        for (const [key, value] of Object.entries(obj)) {
+      const flattenObject = (obj: any, prefix = '') => {
+        Object.entries(obj).forEach(([key, value]) => {
           const newKey = prefix ? `${prefix}.${key}` : key;
           
           if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
@@ -142,12 +149,12 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
             
             if (Array.isArray(value)) {
               stringValue = JSON.stringify(value);
-              type = 'json';
+              type = 'string'; // Store as string but mark for JSON parsing
             } else if (value === null || value === undefined) {
-              continue; // Skip null/undefined values
+              return; // Skip null/undefined values
             } else if (typeof value === 'object') {
               stringValue = JSON.stringify(value);
-              type = 'json';
+              type = 'string'; // Store as string but mark for JSON parsing
             } else {
               stringValue = String(value);
             }
@@ -158,8 +165,8 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
               type,
             });
           }
-        }
-      }
+        });
+      };
       
       flattenObject(newConfig);
       
@@ -180,10 +187,10 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
       }
       
       // Update local state with the new config
-      setConfig({
-        ...config,
+      setConfig(prevConfig => ({
+        ...prevConfig,
         ...newConfig,
-      });
+      }));
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
@@ -194,9 +201,15 @@ export const AppConfigProvider = ({ children }: AppConfigProviderProps) => {
     }
   };
   
-  return (
-    <AppConfigContext.Provider value={{ config, loading, error, updateConfig }}>
-      {children}
-    </AppConfigContext.Provider>
+  const contextValue = {
+    config,
+    loading,
+    error,
+    updateConfig
+  };
+  
+  return React.createElement(AppConfigContext.Provider, 
+    { value: contextValue }, 
+    children
   );
 };
