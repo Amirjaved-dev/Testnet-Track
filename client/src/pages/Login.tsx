@@ -24,8 +24,8 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "niceearn7@gmail.com",
-      password: "Okara786@",
+      email: "",
+      password: "",
     },
   });
 
@@ -56,6 +56,9 @@ export default function Login() {
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
             Enter your credentials to access your account.
+            <div className="mt-2 p-2 bg-blue-50 text-blue-700 text-sm rounded border border-blue-200">
+              <strong>Demo Credentials:</strong> admin@demo.com / admin123
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent>
