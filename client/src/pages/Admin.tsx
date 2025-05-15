@@ -107,6 +107,65 @@ export default function AdminPanel() {
           Back to Site
         </Button>
       </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>App Settings</CardTitle>
+            <CardDescription>
+              Configure general app settings and appearance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Modify app name, colors, and other global settings
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full" onClick={() => setActiveTab("general")}>
+              Manage Settings
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Advertisements</CardTitle>
+            <CardDescription>
+              Manage advertisement content and placement
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Create, edit, and delete advertisements throughout the site
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full" onClick={() => setLocation("/admin/advertisements")}>
+              Manage Advertisements
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Airdrop Criteria</CardTitle>
+            <CardDescription>
+              Configure airdrop eligibility requirements
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Set transaction requirements and other criteria for airdrop eligibility
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full" onClick={() => setActiveTab("airdrop")}>
+              Manage Criteria
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 mb-8">

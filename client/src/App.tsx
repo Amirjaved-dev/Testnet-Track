@@ -9,6 +9,7 @@ import AirdropChecker from "@/pages/AirdropChecker";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Admin from "@/pages/Admin";
+import Advertisements from "@/pages/Advertisements";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/lib/auth";
 
@@ -23,6 +24,7 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/admin" component={Admin} />
+          <Route path="/admin/advertisements" component={Advertisements} />
           <Route component={NotFound} />
         </Switch>
       </main>
