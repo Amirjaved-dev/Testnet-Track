@@ -25,6 +25,9 @@ export async function getDbClient(): Promise<Client | null> {
   try {
     client = new Client({
       connectionString: databaseUrl,
+      ssl: {
+        rejectUnauthorized: false // Required for Supabase connections
+      }
     });
     
     await client.connect();
