@@ -261,6 +261,69 @@ export default function AdvertisementsPage() {
         </div>
       </div>
       
+      {/* Ad placement guide */}
+      <Card className="mb-8 border-blue-200 bg-blue-50">
+        <CardHeader>
+          <CardTitle className="text-blue-800">Advertisement Placement Guide</CardTitle>
+          <CardDescription className="text-blue-700">
+            Use these placements to target specific areas of the site
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border rounded-md p-4 bg-white">
+              <h3 className="font-bold text-lg mb-2">Home Page Ads</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <div className="bg-purple-100 text-purple-800 font-bold px-2 py-1 rounded text-xs">home</div>
+                  <div>
+                    <p className="text-sm font-medium">Main Ad - Top of page</p>
+                    <p className="text-xs text-gray-500">Recommended size: 300×250px</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="bg-purple-100 text-purple-800 font-bold px-2 py-1 rounded text-xs">sidebar</div>
+                  <div>
+                    <p className="text-sm font-medium">Sidebar Ad - Right column</p>
+                    <p className="text-xs text-gray-500">Recommended size: 160×600px</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border rounded-md p-4 bg-white">
+              <h3 className="font-bold text-lg mb-2">Airdrop Checker Page Ads</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <div className="bg-green-100 text-green-800 font-bold px-2 py-1 rounded text-xs">airdrop</div>
+                  <div>
+                    <p className="text-sm font-medium">Top right ad</p>
+                    <p className="text-xs text-gray-500">Recommended size: 300×250px</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="bg-green-100 text-green-800 font-bold px-2 py-1 rounded text-xs">airdrop-side</div>
+                  <div>
+                    <p className="text-sm font-medium">Form sidebar ad</p>
+                    <p className="text-xs text-gray-500">Recommended size: 160×600px</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <h4 className="font-medium text-yellow-800 mb-1">Tips for effective advertisements:</h4>
+            <ul className="text-sm text-yellow-700 space-y-1 list-disc pl-5">
+              <li>Use high-quality images that are properly sized</li>
+              <li>Keep ad content concise and relevant to the audience</li>
+              <li>Include a clear call-to-action</li>
+              <li>Set appropriate start and end dates</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+      
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Current Advertisements</CardTitle>
@@ -388,10 +451,11 @@ export default function AdvertisementsPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="home">Home Page</SelectItem>
-                        <SelectItem value="airdrop">Airdrop Page</SelectItem>
-                        <SelectItem value="sidebar">Sidebar</SelectItem>
-                        <SelectItem value="footer">Footer</SelectItem>
+                        <SelectItem value="home">Home Page - Main Ad</SelectItem>
+                        <SelectItem value="sidebar">Home Page - Sidebar</SelectItem>
+                        <SelectItem value="airdrop">Airdrop Page - Top Right</SelectItem>
+                        <SelectItem value="airdrop-side">Airdrop Page - Sidebar</SelectItem>
+                        <SelectItem value="footer">Footer - All Pages</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription>

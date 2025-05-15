@@ -3,28 +3,14 @@ import { supabase } from '../supabase';
 // Function to create dummy advertisements
 export async function createDummyAdvertisements() {
   try {
-    // First check if the advertisements table exists
-    const { data: tablesData, error: tablesError } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .eq('table_name', 'advertisements');
+    // Skip database operations if we don't have valid connection (in-memory only mode)
+    const { data: healthCheck, error: healthError } = await supabase.from('advertisements').select('count(*)');
     
-    if (tablesError) {
-      console.warn('Error checking for advertisements table:', tablesError.message);
-      return false;
-    }
-    
-    // If the table doesn't exist, we can't create ads
-    if (!tablesData || tablesData.length === 0) {
-      console.info('advertisements table not found, creating...');
-      
-      // Try to create the table
-      const { error: createError } = await supabase.rpc('create_advertisements_table');
-      
-      if (createError) {
-        console.error('Failed to create advertisements table:', createError.message);
-        return false;
-      }
+    // If there's an error, likely the table doesn't exist or we're in in-memory mode
+    if (healthError) {
+      console.log('Using in-memory advertisements');
+      // Just return true as we'll use fallback ads in the Advertisement component
+      return true;
     }
     
     // Check if we already have advertisements

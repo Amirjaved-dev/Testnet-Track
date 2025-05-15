@@ -56,12 +56,86 @@ export default function AdvertisementDisplay({ placement, className = '' }: Adve
     );
   }
 
-  if (error) {
-    return null; // Don't show anything if there's an error
-  }
-
-  if (!ad) {
-    return null; // Don't show anything if no ad is available
+  // Use dummy ad if there's an error or no ad found
+  if (error || !ad) {
+    // Create a dummy ad based on the placement
+    const dummyAds = {
+      'home': {
+        title: 'Monad Testnet Live',
+        content: 'Experience the future of blockchain with Monad Testnet',
+        imageUrl: 'https://pbs.twimg.com/profile_images/1727846447165206528/JJ7cGjwf_400x400.jpg',
+        targetUrl: 'https://monad.xyz'
+      },
+      'airdrop': {
+        title: 'Join the Monad Community',
+        content: 'Connect with other developers and enthusiasts',
+        imageUrl: 'https://pbs.twimg.com/profile_images/1727846447165206528/JJ7cGjwf_400x400.jpg',
+        targetUrl: 'https://discord.gg/monad'
+      },
+      'sidebar': {
+        title: 'Monad Documentation',
+        content: 'Learn how to build on Monad',
+        imageUrl: '',
+        targetUrl: 'https://docs.monad.xyz'
+      },
+      'airdrop-side': {
+        title: 'Get Monad Updates',
+        content: 'Stay informed about the latest developments',
+        imageUrl: '',
+        targetUrl: 'https://twitter.com/monad_xyz'
+      }
+    };
+    
+    // Default dummy ad for unknown placements
+    const defaultDummyAd = {
+      title: 'Monad Wallet Analyzer',
+      content: 'Your gateway to the Monad ecosystem',
+      imageUrl: '',
+      targetUrl: 'https://monad.xyz'
+    };
+    
+    // Set the dummy ad based on placement or use default
+    const dummyAd = dummyAds[placement as keyof typeof dummyAds] || defaultDummyAd;
+    
+    return (
+      <Card className={`w-full border border-primary/20 overflow-hidden ${className}`}>
+        {dummyAd.imageUrl && (
+          <div className="w-full h-40 overflow-hidden">
+            <img 
+              src={dummyAd.imageUrl} 
+              alt={dummyAd.title} 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        
+        <CardHeader className={dummyAd.imageUrl ? 'pt-3 pb-2' : ''}>
+          <CardTitle className="text-lg font-bold">
+            {dummyAd.title}
+          </CardTitle>
+          <CardDescription>
+            Demo Ad
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="py-2">
+          <p className="text-sm">{dummyAd.content}</p>
+        </CardContent>
+        
+        {dummyAd.targetUrl && (
+          <CardFooter className="pt-1 pb-3">
+            <Button 
+              size="sm" 
+              className="w-full" 
+              variant="outline"
+              onClick={() => window.open(dummyAd.targetUrl, '_blank')}
+            >
+              Learn More
+            </Button>
+          </CardFooter>
+        )}
+      </Card>
+    );
   }
 
   return (
